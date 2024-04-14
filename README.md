@@ -11,10 +11,10 @@ pip install -r requirements.txt
 # Usage
 ## Get file contains all pull-request
 ```
-python FMalGit.py -cfpullreq github_link
+python FMalGit.py -cfpullreq $github_link
 ```
 where
-- `github_link`: github repository link
+- `$github_link`: github repository link
 ### Example
 ```
 python FMalGit.py -cfpullreq https://github.com/minhha273/project
@@ -25,12 +25,12 @@ Here is the content of :
 
 ## Export to file
 ```
-python solution.py --changefile change_file_path --rulefolder rules_folder_path --outputfile output_path
+python solution.py --changefile $change_file_path --rulefolder $rules_folder_path --outputfile $output_path
 ```
 where
-- `change_file_path`: path of the change pull file
-- `rules_folder_path`: path of the folder contains all file rules
-- `output_path`: path of output file (default: `./output.txt`)
+- `$change_file_path`: path of the change pull file
+- `$rules_folder_path`: path of the folder contains all file rules
+- `$output_path`: path of output file (default: `./output.txt`)
 
 ## Example
 ### Export output with indicated output file
