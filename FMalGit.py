@@ -101,61 +101,67 @@ def get_changed_file(repo,commit_hash):
 
 g = Github("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")
 
-directory = "change_file_pull"
-if not os.path.exists(directory):
-    os.makedirs(directory)
 
-def check_changed_file_pullreq(repo,hash=None):
+
+
+def check_changed_file_pullreq(repo,hash=None,author=None):
+    output_directory = os.path.join(os.getcwd(),"change_file_pull")
+    os.makedirs(output_directory, exist_ok=True)
+    output_file_path = f"{get_repo_name(repo)}_change_pull.txt"
+    file_path = os.path.join(output_directory,output_file_path)
     repo = g.get_repo(f"{get_user_name(repo)}/{get_repo_name(repo)}")
+    with open(file_path, "w") as output_file:
+
 # Lấy tất cả các yêu cầu kéo
-    pull_requests = repo.get_pulls()
-    index = 1
-    # Lặp qua từng yêu cầu kéo
-    for pull_request in pull_requests:
-        # Lấy mã hash của yêu cầu kéo
-        if hash and pull_request.head.sha != hash:
-            continue
-        pull_request_sha = pull_request.head.sha
-        print("Pull Request SHA:", pull_request_sha)
-        
-        # Lấy ngày tạo của yêu cầu kéo
-        created_at = pull_request.created_at
-        print("Created at:", created_at)
-
-        # Lấy tên đăng nhập của người gửi yêu cầu kéo
-        login_name = pull_request.user.login
-        print("Login Name:", login_name)
-        
-        # Lấy trạng thái của yêu cầu kéo (open, closed, merged)
-        state = pull_request.state
-        print("State:", state)
-        
-        # Lấy danh sách các tệp thay đổi trong yêu cầu kéo
-        files = pull_request.get_files()
-        
-        # In ra thông tin về các tệp thay đổi
-        for file in files:
-            print("File:", file.filename)
-            print("Additions:", file.additions)
-            print("Deletions:", file.deletions)
-            print("Changes:", file.changes)
-            print("Patch:")
-            print(file.patch)
+        pull_requests = repo.get_pulls()
     
-            output_file_path = os.path.join("add_line",str(index) +f"-{file.filename}")
-            with open(output_file_path, "w") as f:
-                f.write(file.patch)
-            index += 1
-            print("\n")
-
-        file_path = os.path.join(directory,f"{pull_request.head.sha}_{file.filename}")
-        #response = g.get(file.filename, pull_request.head.sha)
-        response = requests.get(file.raw_url)
-        # Ghi nội dung của file vào đường dẫn đã chỉ định
-        with open(file_path, "wb") as f:
-            f.write(response.content)
+    # Lặp qua từng yêu cầu kéo
+        for pull_request in pull_requests:
+            # Lấy mã hash của yêu cầu kéo
+            if hash and pull_request.head.sha != hash:
+                continue
+            if author and pull_request.user.login != author:
+                continue
+            pull_request_sha = pull_request.head.sha
+            print("Pull Request SHA:", pull_request_sha)
             
-        print(f"Downloaded file '{file.filename}' from pull request #{pull_request.number} to '{file_path}'")
+            # Lấy ngày tạo của yêu cầu kéo
+            created_at = pull_request.created_at
+            print("Created at:", created_at)
+
+            # Lấy tên đăng nhập của người gửi yêu cầu kéo
+            login_name = pull_request.user.login
+            print("Login Name:", login_name)
+            
+            # Lấy trạng thái của yêu cầu kéo (open, closed, merged)
+            state = pull_request.state
+            print("State:", state)
+            
+            # Lấy danh sách các tệp thay đổi trong yêu cầu kéo
+            files = pull_request.get_files()
+
+            # In ra thông tin về các tệp thay đổi
+            for file in files:
+                print("File:", file.filename)
+                print("Changes:", file.changes)
+                print("Patch:")
+                print(file.patch)
+                print("\n")
+
+    
+            output_file.write("Pull Request SHA: " + pull_request_sha + "\n")
+            output_file.write("Author: "+ login_name + "\n")
+            output_file.write("Date: " + str(created_at) + "\n")
+            output_file.write("State: " + state + "\n")
+            output_file.write("File Change: " + file.filename + "\n")
+            output_file.write("Raw Change: \n" + file.patch + "\n\n")
+            output_file.write("--------------------------------------------------------\n\n")
+
+        #response = g.get(file.filename, pull_request.head.sha)
+        #response = requests.get(file.raw_url)
+        # Ghi nội dung của file vào đường dẫn đã chỉ định
+        
+
 # def options_onl(repo):
 #         user_name = get_user_name(repo) 
 #         repo_name = get_repo_name(repo)
@@ -299,10 +305,6 @@ def scan_commits(repo, _hash=None, _author=None, _percent=0.0):
                 author_trust_status[authored_by] = "untrusted"
                 author_trusted = False
             
-            
-
-            
-
             if percent_rules_violated >= 50:
                 num_commits_violents += 1
             print_sensitive_files(sensitive_files, total_lines_changed)
@@ -593,7 +595,7 @@ def main():
         check_T7(get_repo_name(repo),get_user_name(repo)) 
     if args.cfpullreq:
         repo= str(sys.argv[2])
-        check_changed_file_pullreq(repo,args.hash) 
+        check_changed_file_pullreq(repo,args.hash,args.author) 
     # if args.html:
     #     try:
     #         with open("report.html", "r") as file:
