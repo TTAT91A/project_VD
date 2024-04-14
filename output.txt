@@ -1,0 +1,56 @@
+########################################################
+
+Pull Request SHA: 157dc4ffea14d6a3dbda8ca098b2ca4d4d363f1f
+Author: tsof-smoky
+Date: 2024-04-13 12:51:06+00:00
+State: open
+File Change: md5.php
+rule_id: weak-crypto
+message: Detected usage of weak crypto function. Consider using stronger alternatives.
+cwe: ['CWE-328: Use of Weak Hash']
+
+########################################################
+
+Pull Request SHA: 1d607e88408b5c6feb7380a249906225266c6f88
+Author: tsof-smoky
+Date: 2024-04-13 12:49:11+00:00
+State: open
+File Change: ftp.php
+rule_id: ftp-use
+message: FTP allows for unencrypted file transfers. Consider using an encrypted alternative.
+cwe: ['CWE-319: Cleartext Transmission of Sensitive Information']
+
+########################################################
+
+Pull Request SHA: 9c625f73d4f6e8050869a784ad78a0d37dbf47fc
+Author: tsof-smoky
+Date: 2024-04-13 12:46:26+00:00
+State: open
+File Change: eval-user.php
+rule_id: eval-use
+message: Evaluating non-constant commands. This can lead to command injection.
+cwe: ["CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"]
+
+########################################################
+
+No malicious commits were found
+
+########################################################
+
+Pull Request SHA: 51687eeedd566a680741610f60a74fa0d2d4ae4c
+Author: tsof-smoky
+Date: 2024-04-12 06:22:50+00:00
+State: open
+File Change: sum.php
+rule_id: phpinfo-use
+message: The 'phpinfo' function may reveal sensitive information about your environment.
+cwe: ['CWE-200: Exposure of Sensitive Information to an Unauthorized Actor']
+
+########################################################
+
+No malicious commits were found
+
+########################################################
+
+No malicious commits were found
+

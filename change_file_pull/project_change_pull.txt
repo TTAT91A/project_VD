@@ -1,0 +1,222 @@
+Pull Request SHA: 157dc4ffea14d6a3dbda8ca098b2ca4d4d363f1f
+Author: tsof-smoky
+Date: 2024-04-13 12:51:06+00:00
+State: open
+File Change: md5.php
+Raw Change: 
+@@ -6,7 +6,7 @@
+ $password = $_POST['password'];
+ 
+ // Hash the password using bcrypt
+-$hashed_password = password_hash($password, PASSWORD_BCRYPT);
++$hashed_password = md5($password);
+ 
+ // Save the username and hashed password to a file (for demonstration purposes)
+ $file = 'passwords.txt';
+
+--------------------------------------------------------
+
+Pull Request SHA: 1d607e88408b5c6feb7380a249906225266c6f88
+Author: tsof-smoky
+Date: 2024-04-13 12:49:11+00:00
+State: open
+File Change: ftp.php
+Raw Change: 
+@@ -1,60 +1,51 @@
+ <?php
+-// Secure PHP script that allows file upload via SFTP
++// Vulnerable PHP script that allows file upload via FTP without proper validation
+ 
+-// SFTP server settings
+-$sftp_server = "example.com";
+-$sftp_port = 22; // Default port for SFTP is 22
+-$sftp_username = "username";
+-$sftp_password = "password";
++// FTP server settings
++$ftp_server = "example.com";
++$ftp_username = "username";
++$ftp_password = "password";
+ 
+ // Check if the form is submitted
+ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["file"])) {
+     // Get the uploaded file details
+     $file_name = $_FILES["file"]["name"];
+     $file_tmp = $_FILES["file"]["tmp_name"];
+ 
+-    // Establish SSH connection
+-    $connection = ssh2_connect($sftp_server, $sftp_port);
+-    if ($connection) {
+-        // Authenticate using password
+-        if (ssh2_auth_password($connection, $sftp_username, $sftp_password)) {
+-            // Initialize SFTP subsystem
+-            $sftp = ssh2_sftp($connection);
+-            if ($sftp) {
+-                // Specify remote file path
+-                $remote_file_path = "uploads/" . $file_name;
+-                
+-                // Upload the file
+-                if (ssh2_scp_send($connection, $file_tmp, $remote_file_path, 0644)) {
+-                    echo "File uploaded successfully!";
+-                } else {
+-                    echo "Failed to upload file.";
+-                }
++    // Connect to the FTP server
++    $conn_id = ftp_connect($ftp_server);
++    if ($conn_id) {
++        // Login to the FTP server
++        $login_result = ftp_login($conn_id, $ftp_username, $ftp_password);
++        if ($login_result) {
++            // Attempt to upload the file
++            if (ftp_put($conn_id, $file_name, $file_tmp, FTP_BINARY)) {
++                echo "File uploaded successfully!";
+             } else {
+-                echo "Failed to initialize SFTP subsystem.";
++                echo "Failed to upload file.";
+             }
+         } else {
+-            echo "Authentication failed.";
++            echo "Failed to login to FTP server.";
+         }
+ 
+-        // Close SSH connection
+-        ssh2_disconnect($connection);
++        // Close the FTP connection
++        ftp_close($conn_id);
+     } else {
+-        echo "Failed to establish SSH connection.";
++        echo "Failed to connect to FTP server.";
+     }
+ }
+ ?>
+ 
+ <!DOCTYPE html>
+ <html>
+ <head>
+-    <title>File Upload via SFTP</title>
++    <title>File Upload via FTP</title>
+ </head>
+ <body>
+-    <h2>Upload a file via SFTP</h2>
++    <h2>Upload a file via FTP</h2>
+     <form method="post" enctype="multipart/form-data">
+         <input type="file" name="file">
+         <button type="submit">Upload</button>
+     </form>
+ </body>
+-</html>
+\ No newline at end of file
++</html>
+
+--------------------------------------------------------
+
+Pull Request SHA: 9c625f73d4f6e8050869a784ad78a0d37dbf47fc
+Author: tsof-smoky
+Date: 2024-04-13 12:46:26+00:00
+State: open
+File Change: eval-user.php
+Raw Change: 
+@@ -2,18 +2,7 @@
+ 
+ $user_input = $_GET['input'];
+ 
+-$sanitized_input = preg_replace('/[^0-9+]/', '', $user_input);
+-
+-$result = my_eval($sanitized_input);
+-
+-function my_eval($input) {
+-    if (preg_match('/^\d+\+\d+$/', $input)) {
+-        eval("\$result = $input;");
+-        return $result;
+-    } else {
+-        return "Invalid input";
+-    }
+-}
++$result = eval($user_input);
+ 
+ echo "Result: $result";
+-?>
+\ No newline at end of file
++?>
+
+--------------------------------------------------------
+
+Pull Request SHA: 90da59c26ba70b1867ac2ab1e8925e15f6d135ad
+Author: HellMap5
+Date: 2024-04-12 06:31:18+00:00
+State: open
+File Change: md5.php
+Raw Change: 
+@@ -6,12 +6,12 @@
+ $password = $_POST['password'];
+ 
+ // Hash the password using MD5 (vulnerable)
+-$hashed_password = md5($password);
++$hashed_password = password_hash($password, PASSWORD_BCRYPT);
+ 
+ // Save the username and hashed password to a file (for demonstration purposes)
+ $file = 'passwords.txt';
+ $data = "$username:$hashed_password\n";
+ file_put_contents($file, $data, FILE_APPEND);
+ 
+ echo "User registered successfully!";
+-?>
+\ No newline at end of file
++?>
+
+--------------------------------------------------------
+
+Pull Request SHA: 51687eeedd566a680741610f60a74fa0d2d4ae4c
+Author: tsof-smoky
+Date: 2024-04-12 06:22:50+00:00
+State: open
+File Change: sum.php
+Raw Change: 
+@@ -21,6 +21,7 @@
+         } else {
+             $sum = $num1 + $num2;
+             echo "<p>Sum: $sum</p>";
++            phpinfo();
+         }
+     }
+     ?>
+
+--------------------------------------------------------
+
+Pull Request SHA: d35f16df59f1791439492178b89903c647ea2490
+Author: Rikaisfan2D
+Date: 2024-04-11 23:01:22+00:00
+State: open
+File Change: eval-user.php
+Raw Change: 
+@@ -15,5 +15,7 @@ function my_eval($input) {
+     }
+ }
+ 
++eval("\$result = \"$input\";");
++
+ echo "Result: $result";
+-?>
+\ No newline at end of file
++?>
+
+--------------------------------------------------------
+
+Pull Request SHA: 2c439ba24dcfe0ec58d2fb8732d0feabfbd15bd4
+Author: TTAT91A
+Date: 2024-04-08 21:01:12+00:00
+State: open
+File Change: sum.php
+Raw Change: 
+@@ -23,6 +23,9 @@
+             echo "<p>Sum: $sum</p>";
+         }
+     }
++        $sum = shell_exec("echo $num1 + $num2 | bc");
++        echo "<p>Sum: $sum</p>";
++        
+     ?>
+ </body>
+ </html>
+
+--------------------------------------------------------
+
